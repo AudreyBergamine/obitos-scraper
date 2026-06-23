@@ -14,10 +14,19 @@ Write-Host "Verificando autenticação GitHub..." -ForegroundColor Cyan
 & $gh auth status
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
-    Write-Host "Execute primeiro: gh auth login" -ForegroundColor Yellow
+    Write-Host "Execute primeiro:" -ForegroundColor Yellow
+    Write-Host "  gh auth login" -ForegroundColor White
+    Write-Host ""
+    Write-Host "Escolha: GitHub.com → HTTPS → Login with a web browser" -ForegroundColor Yellow
     Write-Host "Depois rode este script novamente." -ForegroundColor Yellow
     exit 1
 }
+
+$ghUser = & $gh api user -q .login
+$ghEmail = "$ghUser@users.noreply.github.com"
+Write-Host "Configurando identidade git local: $ghUser <$ghEmail>" -ForegroundColor Cyan
+& $git config user.name $ghUser
+& $git config user.email $ghEmail
 
 if (-not (Test-Path ".git")) {
     Write-Host "Inicializando repositório git..." -ForegroundColor Cyan
