@@ -117,6 +117,33 @@ def format_date(value: date | None) -> str:
     return value.isoformat() if value else ""
 
 
+def format_date_ddmmaaaa(value: date | str | None) -> str | None:
+    """Formata data no padrão exigido pela API Sintegra (ddmmaaaa)."""
+    if value is None:
+        return None
+
+    if isinstance(value, date):
+        parsed = value
+    else:
+        text = str(value).strip()
+        if len(text) == 8 and text.isdigit():
+            try:
+                parsed = date(int(text[4:8]), int(text[2:4]), int(text[0:2]))
+            except ValueError:
+                return None
+        else:
+            parsed = parse_date_br(text)
+            if not parsed:
+                return None
+
+    return f"{parsed.day:02d}{parsed.month:02d}{parsed.year:04d}"
+
+
+def format_date_br(value: date | None) -> str:
+    """Formata date como dd/mm/aaaa."""
+    return value.strftime("%d/%m/%Y") if value else ""
+
+
 def deduplicate_records(records: list[dict[str, Any]], keys: tuple[str, ...]) -> list[dict[str, Any]]:
     """Remove duplicatas com base em chaves normalizadas."""
     seen: set[tuple[Any, ...]] = set()

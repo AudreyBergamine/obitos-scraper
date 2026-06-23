@@ -2,13 +2,27 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 # Diretórios
 BASE_DIR = Path(__file__).resolve().parent
+INPUT_DIR = BASE_DIR / "input"
 OUTPUT_DIR = BASE_DIR / "output"
-OUTPUT_CSV = OUTPUT_DIR / "obitos.csv"
 SAMPLES_DIR = BASE_DIR / "samples"
+
+# Arquivos padrão — obituários
+OUTPUT_CSV = OUTPUT_DIR / "obitos.csv"
+
+# Arquivos padrão — base de clientes (BD.csv)
+BD_INPUT_CSV = INPUT_DIR / "BD.csv"
+BD_OUTPUT_CSV = OUTPUT_DIR / "BD_processado.csv"
+BD_OUTPUT_XLSX = OUTPUT_DIR / "BD_processado.xlsx"
+BD_FALECIDOS_CSV = OUTPUT_DIR / "BD_falecidos.csv"
+
+# Consulta CPF genérica
+OUTPUT_CPF_CSV = OUTPUT_DIR / "cpf_consulta.csv"
+CPF_INPUT_SAMPLE = SAMPLES_DIR / "cpf_entrada.exemplo.csv"
 
 # HTTP
 REQUEST_TIMEOUT = 30
@@ -26,8 +40,12 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 }
 
-# URLs de obituários públicos brasileiros (adicione novas fontes aqui)
-# Cada entrada pode definir um parser específico ou usar "generic".
+# API Sintegra WS — Receita Federal CPF
+SINTEGRA_API_URL = "https://www.sintegraws.com.br/api/v1/execute-api.php"
+SINTEGRA_PLUGIN = "CPF"
+SINTEGRA_TOKEN = os.getenv("SINTEGRA_TOKEN", "")
+SINTEGRA_REQUEST_DELAY = float(os.getenv("SINTEGRA_REQUEST_DELAY", "1.5"))
+
 OBITUARY_SOURCES: list[dict[str, str]] = [
     {
         "name": "demo_local",
@@ -35,16 +53,8 @@ OBITUARY_SOURCES: list[dict[str, str]] = [
         "parser": "generic",
         "type": "file",
     },
-    # Exemplos de fontes reais — descomente e ajuste conforme necessário:
-    # {
-    #     "name": "exemplo_funeral",
-    #     "url": "https://www.exemplo.com.br/obituarios",
-    #     "parser": "generic",
-    #     "type": "http",
-    # },
 ]
 
-# Colunas do CSV de saída
 CSV_COLUMNS = [
     "nome",
     "cidade",
@@ -56,5 +66,38 @@ CSV_COLUMNS = [
     "fonte",
 ]
 
-# Chaves usadas na deduplicação
+CPF_OUTPUT_COLUMNS = [
+    "cpf_entrada",
+    "data_nascimento_entrada",
+    "api_code",
+    "api_status",
+    "api_message",
+    "cpf",
+    "nome",
+    "nome_mae",
+    "data_nascimento",
+    "situacao_cadastral",
+    "ano_obito",
+    "idade",
+    "uf",
+    "sexo",
+    "data_inscricao",
+    "qsa_quantidade",
+    "falecido",
+]
+
+# Colunas de saída do BD.csv processado (Databricks / Power BI)
+BD_OUTPUT_COLUMNS = [
+    "CPF",
+    "Nome",
+    "Data de Nascimento",
+    "nome_receita",
+    "situacao_cadastral",
+    "ano_obito",
+    "Titular falecido",
+    "api_code",
+    "api_message",
+]
+
 DEDUP_KEYS = ("nome", "cidade", "data_obito")
+SITUACAO_FALECIDO = "Titular falecido"
