@@ -1,0 +1,17 @@
+---
+description: Versionar alterações com git commit e push para GitHub
+alwaysApply: true
+---
+
+# Git workflow — obitos_scraper
+
+Este projeto está conectado ao GitHub. Ao concluir alterações de código:
+
+1. Verifique `git status` e `git diff` antes de commitar.
+2. Crie um commit descritivo em português (1–2 frases, foco no porquê).
+3. Faça push para `origin` na branch atual, salvo se o usuário pedir o contrário.
+4. Não commite segredos (`.env`, tokens, credenciais).
+5. Não altere `git config` global/local.
+6. Não use `--no-verify`, amend ou force push sem pedido explícito.
+
+Repositório remoto: `origin` → GitHub (`obitos_scraper`).
